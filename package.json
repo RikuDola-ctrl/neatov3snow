@@ -1,5 +1,5 @@
 {
-  "name": "neatosno",
+  "name": "neatosnow",
   "version": "1.2.0",
   "description": "neato crosstrade snow",
   "main": "app.js",
@@ -12,6 +12,6 @@
   "scripts": {
     "start": "node app.js"
   },
-  "author": "",
+  "author": "me",
   "license": "ISC"
 }
