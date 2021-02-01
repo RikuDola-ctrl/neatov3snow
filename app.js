@@ -200,10 +200,5 @@ client.on('message', async message => {
 	} 
 });
 
-const PORT = process.env.PORT || 3000;
-process.listen(PORT, () => {
-    console.log(`Our app is running on port ${ PORT }`);
-});
-
 client.login(process.env.BOT_TOKEN);
 // client.login('NzQ1NDcwNTkyMTE5MjA5OTk0.XzyPlw.2283P6YPwYmnnYWwLMR65jO69mk');
