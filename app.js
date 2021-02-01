@@ -201,7 +201,7 @@ client.on('message', async message => {
 });
 
 const PORT = process.env.PORT || 3000;
-Discord.Application.listen(PORT, () => {
+process.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
 });
 
