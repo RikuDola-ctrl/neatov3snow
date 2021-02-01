@@ -201,5 +201,5 @@ client.on('message', async message => {
 	} 
 });
 
-client.login(process.env.token);
+client.login(process.env.BOT_TOKEN);
 // client.login('NzQ1NDcwNTkyMTE5MjA5OTk0.XzyPlw.2283P6YPwYmnnYWwLMR65jO69mk');
