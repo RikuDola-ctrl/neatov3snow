@@ -4,7 +4,6 @@
   "description": "neato crosstrade snow",
   "main": "app.js",
   "dependencies": {
-    "discord.js-minesweeper": "^1.0.6",
     "discord.js": "^12.5.1",
     "sequelize": "^6.4.0",
     "sqlite3": "^5.0.1"
