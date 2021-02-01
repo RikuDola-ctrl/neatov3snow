@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const { Users, CurrencyShop } = require('./dbObjects');
 const { Op } = require('sequelize');
-const { url } = require('inspector');
 const currency = new Discord.Collection();
 const PREFIX = 'n!' && 'n';
 const cooldowns = new Discord.Collection();

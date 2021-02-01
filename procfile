@@ -1,1 +1,2 @@
 Worker: node app.js
+Worker: node dbInit.js
