@@ -4,8 +4,10 @@
   "description": "neato crosstrade snow",
   "main": "app.js",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "sequelize": "^6.4.0",
+    "canvas": "^2.6.1",
+    "discord.js": "github:discordjs/discord.js",
+    "json": "^10.0.0",
+    "sequelize": "^6.5.0",
     "sqlite3": "^5.0.1"
   },
   "devDependencies": {},
