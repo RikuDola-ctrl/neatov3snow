@@ -394,25 +394,6 @@ client.on('message', async message => {
 			.setThumbnail(`${client.user.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`)
 			.setDescription(`**Server Owner**\n**\`${message.guild.owner.user.tag}\`**\n\n**Member Count**\n**\`${message.guild.memberCount}/1,000 Goal\`**\n\n**Uptime**\n**\`${uptime}\`**\n\n**<#736210787525460079> Message Count**\n**\`${x2}/10,000 Daily Goal\`**\n\n**Logged in at**\n**\`${client.readyAt.toString().replace(" (Eastern Standard Time)", "")}\`**\n\n**Ping**\n**\`${Date.now() - message.createdTimestamp}ms/${client.ws.ping}ms\`**`);
 		return message.inlineReply(statsEmbed);
-	} else if (command === "sasuke") {
-		const canvas = Canvas.createCanvas(1280, 718);
-		const ctx = canvas.getContext('2d');
-		const background = await Canvas.loadImage('./itachi.jpeg');
-		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-		ctx.beginPath();
-		ctx.arc(375, 210, 235, 0, Math.PI * 2, true);
-		ctx.closePath();
-		ctx.clip();
-		const avatar = await Canvas.loadImage(`${message.author.displayAvatarURL({ format: 'png' })}?size=1024`);
-		ctx.drawImage(avatar, 125, -40, 500, 500);
-		const backgroundTop = await Canvas.loadImage('./sasukechoke2.png');
-		ctx.drawImage(backgroundTop, 0, 0, canvas.width, canvas.height);
-		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'sasuke.png');
-		const sasukeEmbed = new Discord.MessageEmbed()
-			.setColor(color)
-			.attachFiles([attachment])
-			.setImage("attachment://sasuke.png");
-		message.inlineReply(sasukeEmbed);
 	}
 });
 
