@@ -20,7 +20,7 @@ Users.prototype.addItem = async function(item) {
 	});
 
 	if (userItem) {
-		userItem.amount += 1;
+		userItem.amount = 1;
 		return userItem.save();
 	}
 

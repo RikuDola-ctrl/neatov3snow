@@ -1,12 +1,14 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
-const { Users, CurrencyShop } = require('./dbObjects');
+const allIntents = Discord.Intents.ALL;
+const client = new Discord.Client({ intents: allIntents });
+
+const { UserItems, Users, CurrencyShop } = require('./dbObjects');
 const { Op } = require('sequelize');
-//const { format } = require('sequelize/types/lib/utils');
+// const { format } = require('sequelize/types/lib/utils');
 const Canvas = require('canvas');
 const currency = new Discord.Collection();
 const PREFIX = 'n!' && 'n';
-const cooldowns = new Discord.Collection();
+// const cooldowns = new Discord.Collection();
 const color = `9B2F2E`;
 const pasta = require('./pasta.json');
 function getRandomInt(min, max) {
@@ -41,6 +43,7 @@ client.once('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 	client.user.setStatus("idle");
 	console.log(`Logged in at ${client.readyAt}`);
+	voteRemind();
 });
 
 const collectedCooldown = new Set();
@@ -58,69 +61,68 @@ function checkDate() {
 		x2 = 0;
 	}
 }
+setInterval(voteRemind, 600000);
+function voteRemind() {
+	const remindEmbed = new Discord.MessageEmbed()
+		.setTitle('Vote for the server!')
+		.setColor(color)
+		.setDescription(`Please vote for the server [**here**](https://top.gg/servers/728065976213569576/vote) if you're enjoying your stay <:gbIbukiYessirr:784591732377518150>`);
+	client.channels.cache.get('736210787525460079').send(remindEmbed);
+}
+
+require("./ExtendedMessage");
 client.on('message', async message => {
+	if (message.content.toLowerCase() === `kv`) {
+		message.delete();
+	}
+	if (message.content.toLowerCase().startsWith(`kv `)) {
+		message.delete();
+	}
+	if (message.content.toLowerCase().startsWith(`kwi `)) {
+		message.delete();
+	}
 	const today = new Date();
 	const dotw = today.getDay();
 	const wknd = (dotw === 0 || dotw === 5 || dotw === 6);
 	if (message.channel.id === "736210787525460079") {
-		if (message.content.toLowerCase().includes("is dropping")) {
-			const filter = (reaction, user) => {
-				return reaction.emoji.name === '❄️' && user.id != msg.author.id && user.id != "605938419813842944";
-			};
-			const collector = msg.createReactionCollector(filter, { max: 3, time: 7500 });
-			msg.react('☁️')
-				.then(() => msg.react('🌨️'))
-				.then(() => msg.react('❄️'));
-			collector.on('collect', (reaction, user) => {
-				if (!collectedCooldown.has(user.id)) {
-					const collectedSnow = getRandomInt(100, 175);
-					currency.add(user.id, collectedSnow);
-					client.channels.cache.get('736210787525460079').send(`${user} has collected **‹❄️ ${collectedSnow} · \`Snowflakes\`›**`);
-					collectedCooldown.add(user.id);
-					setTimeout(() => {
-						collectedCooldown.delete(user.id)
-					}, 600000);
-				} else {
-					return client.channels.cache.get('736210787525460079').send(`${user}, you're on a cooldown!`);
-				}
-			})
-			collector.on('end', collected => {
-				const meltedEmbed = new Discord.MessageEmbed()
-					.setColor('ff7d00')
-					.setTitle('🌤️ Looks like all the snow has melted... 🌤️')
-					.setImage('https://media1.tenor.com/images/0354595139f78447ca9f6265c02681d7/tenor.gif?itemid=19265255')
-					.setDescription('Don\'t worry, it\'ll snow again soon, so just stay active!');
-				msg.edit('', meltedEmbed)
-					.then(() => msg.reactions.removeAll());
-			});
+		x2++;
+	}
+	if (message.author.id === "646937666251915264") {
+		if (message.content.toLowerCase().includes(`a temporary restriction is preventing you from using that command for another`)) {
+			message.delete();
 		}
-		if (message.content.toLowerCase().includes("i'm dropping")) {
+		if (message.content.toLowerCase().includes("dropping 4 cards")) {
 			const filter = (reaction, user) => {
 				return reaction.emoji.name === '4️⃣' && user.id === message.author.id;
 			};
-			const collector = msg.createReactionCollector(filter, { max: 1, time: 5000 });
+			const collector = message.createReactionCollector(filter, { max: 1, time: 20000 });
 			collector.on('collect', (reaction) => {
 				message.react('✨');
-				message.channel.send('Make sure to react with ✨ if the drop is swag <:gbPoggies:808694497822638090>');
 			})
 			collector.on('end', collected => {
 				message.react('✨');
-				message.channel.send('Make sure to react with ✨ if the drop is swag <:gbPoggies:808694497822638090>');
 			});
-		}
-		
-		x2++;
+		} else if (message.content.toLowerCase().includes("dropping 3 cards")) {
+			const filter = (reaction, user) => {
+				return reaction.emoji.name === '3️⃣' && user.id === message.author.id;
+			};
+			const collector = message.createReactionCollector(filter, { max: 1, time: 20000 });
+			collector.on('collect', (reaction) => {
+				message.react('✨');
+			})
+			collector.on('end', collected => {
+				message.react('✨');
+			});
+		};
 	}
 	if (message.author.bot) return;
 	if (!message.guild) return;
-	 if (message.channel.id != '738033863779156009') return;
 	if (wknd) {
 		currency.add(message.author.id, 1.5);
 	} else {
 		currency.add(message.author.id, 1);
 	}
 	x++;
-	console.log(x);
 	if (x % 250 === 0) {
 		console.log('Snowing 🌨️');
 		if (wknd) {
@@ -213,18 +215,26 @@ client.on('message', async message => {
 			.setColor(color)
 			.setDescription(`Showing <@${target.id}>'s balance\n\n**‹❄️ ${currency.getBalance(target.id)} · \`Snowflake\`›**\n${items.map((i, position) => `**‹${i.item.emoji} · ${i.item.name}›**`).join('\n')}`)
 			.setImage(``);
-		return message.channel.send(embed);
-	} else if (command === 'buy') {
+		return message.inlineReply(embed);
+	} else if (command === 'rob') {
+		const target = message.mentions.users.first() || message.author;
+		const userItem = await UserItems.findOne({
+			where: { user_id: target.id, item_id: 3 },
+		});
+		if (userItem) {
+			message.inlineReply(`Robbery unsuccessful because victim had a fridge :pensive:`);
+		} else message.inlineReply(`Robbery successful because victim did not have a fridge <:gbTakeTheL:767155619488333885>`);
+	/* } else if (command === 'buy') {
 		const item = await CurrencyShop.findOne({ where: { alias: { [Op.like]: commandArgs } } });
 		const user = await Users.findOne({ where: { user_id: message.author.id } });
-		if (!item) return message.channel.send(`That item is invalid, please check your spelling and try again`);
+		if (!item) return message.inlineReply(`That item is invalid, please check your spelling and try again`);
 		if (item.cost > currency.getBalance(message.author.id)) {
 			const noFundsEmbed = new Discord.MessageEmbed()
 				.setColor(color)
 				.setDescription(`You currently have **‹❄️ ${currency.getBalance(message.author.id)} · \`Snowflake\`›**,\nbut the **‹${item.emoji} · ${item.name}›** costs **‹❄️ ${item.cost} · \`Snowflake\`›**`)
 				.setTitle(`Insufficient Funds`)
 				.setThumbnail(`${message.author.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`);
-			return message.channel.send(noFundsEmbed);
+			return message.inlineReply(noFundsEmbed);
 		}
 		if (!message.member.roles.cache.has(item.roleReq)) {
 			const noRoleEmbed = new Discord.MessageEmbed()
@@ -232,7 +242,7 @@ client.on('message', async message => {
 				.setDescription(`You need the <@&${item.roleReq}> role to purchase **‹${item.emoji} · ${item.name}›**`)
 				.setTitle(`Requires Role`)
 				.setThumbnail(`${message.author.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`);
-			return message.channel.send(noRoleEmbed);
+			return message.inlineReply(noRoleEmbed);
 		}
 		currency.add(message.author.id, -item.cost);
 		message.member.roles.add(item.role)
@@ -242,26 +252,26 @@ client.on('message', async message => {
 			.setTitle(`Purchase Successful`)
 			.setThumbnail(`${message.author.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`)
 			.setDescription(`Bought **‹${item.emoji} · ${item.name}›** for **‹❄️ ${item.cost} · \`Snowflake\`›**`);
-		message.channel.send(buyEmbed);
-	} else if (command === 'give') {
+		message.inlineReply(buyEmbed);
+	*/ } else if (command === 'give') {
 		if (!message.member.roles.cache.has("806185184563167239")) {
 			const noGiveEmbed = new Discord.MessageEmbed()
 				.setColor(color)
 				.setDescription(`You need the <@&806185184563167239> role to transfer **‹❄️ · \`Snowflakes\`›** to prevent possible alts`)
 				.setTitle(`Requires Role`)
 				.setThumbnail(`${message.author.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`);
-			return message.channel.send(noGiveEmbed);
+			return message.inlineReply(noGiveEmbed);
 		}
 		const currentAmount = currency.getBalance(message.author.id);
 		const transferAmount = commandArgs.split(/ +/g).find(arg => !/<@!?\d+>/g.test(arg));
 		const transferTarget = message.mentions.users.first();
-		if (transferTarget.bot) return message.channel.send(`You must mention another **user** to use this command`);
-		if (!transferAmount || isNaN(transferAmount)) return message.channel.send(`You don't seem to know how to use this command`);
-		if (transferAmount > currentAmount) return message.channel.send(`You only have **‹❄️ ${currentAmount} · \`Snowflake\`›**, and you can't give more than you have, dumbass`);
-		if (transferAmount <= 0) return message.channel.send(`Please enter an amount **greater than zero**`);
+		if (transferTarget.bot) return message.inlineReply(`You must mention another **user** to use this command`);
+		if (!transferAmount || isNaN(transferAmount)) return message.inlineReply(`You don't seem to know how to use this command`);
+		if (transferAmount > currentAmount) return message.inlineReply(`You only have **‹❄️ ${currentAmount} · \`Snowflake\`›**, and you can't give more than you have, dumbass`);
+		if (transferAmount <= 0) return message.inlineReply(`Please enter an amount **greater than zero**`);
 		const amount = transferAmount * 1;
 		if (!Number.isInteger(amount)) {
-			return message.channel.send(`Please enter a **FUCKING NORMAL INTEGER**`);
+			return message.inlineReply(`Please enter a **FUCKING NORMAL INTEGER**`);
 		} else {
 			currency.add(message.author.id, -transferAmount);
 			currency.add(transferTarget.id, transferAmount);
@@ -270,7 +280,7 @@ client.on('message', async message => {
 				.setDescription(`${message.author} → ${transferTarget}\n**‹❄️ ${transferAmount} · \`Snowflake\`›**`)
 				.setColor(color)
 				.setThumbnail(`${transferTarget.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`);
-			return message.channel.send(transferEmbed);
+			return message.inlineReply(transferEmbed);
 		}
 	} else if (command === 'shop') {
 		const items = await CurrencyShop.findAll();
@@ -278,7 +288,7 @@ client.on('message', async message => {
 			.setColor(color)
 			.setTitle('Shop')
 			.setDescription(items.map(item => `**‹${item.emoji} · ${item.name}› – ‹❄️ \`${item.cost}\`›**`).join('\n'), { code: true });
-		message.channel.send(shopEmbed); /*
+		message.inlineReply(shopEmbed); /*
 	} else if (command === 'daily') {
 		if (!cooldowns.has(command)) {
 			cooldowns.set(command, new Discord.Collection());
@@ -296,7 +306,7 @@ client.on('message', async message => {
 
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 3600000;
-				return message.channel.send(`Please wait **${timeLeft.toFixed()} hour(s)** before claiming your reward again`);
+				return message.inlineReply(`Please wait **${timeLeft.toFixed()} hour(s)** before claiming your reward again`);
 			}
 		}
 		timestamps.set(message.author.id, now);
@@ -307,12 +317,12 @@ client.on('message', async message => {
 			.setTitle("Reward Claimed")
 			.setThumbnail(`${message.author.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`)
 			.setDescription(`<@${message.author.id}> has earned:\n**‹❄️ 250 · \`Snowflake\`›**\n\nYou may reuse this command every \`24 hours\``)
-		message.channel.send(dailyEmbed);
+		message.inlineReply(dailyEmbed);
 	} else if (command === 'bump') {
 		const target = message.mentions.users.first();
-		if (target.bot) return message.channel.send(`You must mention another **user** to use this command`);
-		if (!target) return message.channel.send('You must mention another user to use this command');
-		if (target === message.author) return message.channel.send('You may have outsmarted me, but I outsmarted your outsmarting!');
+		if (target.bot) return message.inlineReply(`You must mention another **user** to use this command`);
+		if (!target) return message.inlineReply('You must mention another user to use this command');
+		if (target === message.author) return message.inlineReply('You may have outsmarted me, but I outsmarted your outsmarting!');
 		if (!cooldowns.has(command)) {
 			cooldowns.set(command, new Discord.Collection());
 		}
@@ -329,7 +339,7 @@ client.on('message', async message => {
 
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 60000;
-				return message.channel.send(`Please wait **${timeLeft.toFixed()} minute(s)** before bumping to another user`);
+				return message.inlineReply(`Please wait **${timeLeft.toFixed()} minute(s)** before bumping to another user`);
 			}
 		}
 		timestamps.set(message.author.id, now);
@@ -341,7 +351,7 @@ client.on('message', async message => {
 			.setTitle("User Bumped")
 			.setThumbnail(`${target.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`)
 			.setDescription(`Both ${target} & <@${message.author.id}> have earned:\n**‹❄️ 100 · \`Snowflake\`›**\n\nYou may reuse this command every \`60 minutes\``)
-		return message.channel.send(repEmbed); */
+		return message.inlineReply(repEmbed); */
 	} else if (command === 'help') {
 		const helpEmbed = new Discord.MessageEmbed()
 			.setColor(color)
@@ -356,7 +366,7 @@ client.on('message', async message => {
 			.addField(`\`n!bump\``, `Gives you & mentioned user **‹❄️ 100 · \`Snowflake\`›**`)
 			.addField(`\`n!daily\``, `Redeem your daily reward of **‹❄️ 250 · \`Snowflake\`›**`)
 			.addField(`\`n!shop\``, `Shows the shop`);
-		return message.channel.send(helpEmbed);
+		return message.inlineReply(helpEmbed);
 	} else if (command === 'top') {
 		currency.set(client.user.id, 0)
 		const lbEmbed = new Discord.MessageEmbed()
@@ -368,7 +378,7 @@ client.on('message', async message => {
 				.map((user, position) => `**\`[${position + 1}]\`** <@${(client.users.cache.get(user.user_id).id)}>\n**‹❄️ ${user.balance} · \`Snowflake\`›**`)
 				.join('\`\`\` \`\`\`'),
 				{ code: false });
-		return message.channel.send(lbEmbed);
+		return message.inlineReply(lbEmbed);
 	} else if (command === 'st') {
 		let totalSeconds = (client.uptime / 1000);
 		let days = Math.floor(totalSeconds / 86400);
@@ -383,7 +393,7 @@ client.on('message', async message => {
 			.setColor(color)
 			.setThumbnail(`${client.user.displayAvatarURL({ format: "png", dynamic: true })}?size=1024`)
 			.setDescription(`**Server Owner**\n**\`${message.guild.owner.user.tag}\`**\n\n**Member Count**\n**\`${message.guild.memberCount}/1,000 Goal\`**\n\n**Uptime**\n**\`${uptime}\`**\n\n**<#736210787525460079> Message Count**\n**\`${x2}/10,000 Daily Goal\`**\n\n**Logged in at**\n**\`${client.readyAt.toString().replace(" (Eastern Standard Time)", "")}\`**\n\n**Ping**\n**\`${Date.now() - message.createdTimestamp}ms/${client.ws.ping}ms\`**`);
-		return message.channel.send(statsEmbed);
+		return message.inlineReply(statsEmbed);
 	} else if (command === "sasuke") {
 		const canvas = Canvas.createCanvas(1280, 718);
 		const ctx = canvas.getContext('2d');
@@ -399,10 +409,14 @@ client.on('message', async message => {
 		ctx.drawImage(backgroundTop, 0, 0, canvas.width, canvas.height);
 		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'sasuke.png');
 		const sasukeEmbed = new Discord.MessageEmbed()
-		.setColor(color)
-		.attachFiles([attachment])
-		.setImage("attachment://sasuke.png");
-		message.channel.send(sasukeEmbed);
+			.setColor(color)
+			.attachFiles([attachment])
+			.setImage("attachment://sasuke.png");
+		message.inlineReply(sasukeEmbed);
 	}
 });
+
 client.login(pasta.token);
+
+
+// 8====D

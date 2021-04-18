@@ -16,8 +16,8 @@ const force = process.argv.includes('--force') || process.argv.includes('-f');
 sequelize.sync({ force }).then(async () => {
 	const shop = [
 		/* CurrencyShop.upsert({ emoji: ``, name: ``, desc: ``, alias: ``, cost: 0, role: ``, roleReq: `` }) */
-		CurrencyShop.upsert({ emoji: `💠`, name: `\`Buyer Badge\``, alias: `buyer badge`, cost: 1500, role: `806185184563167239`, roleReq: `749398291849936947` }),
-		CurrencyShop.upsert({ emoji: `💠`, name: `\`Seller Badge\``, alias: `seller badge`, cost: 1500, role: `806185323309826058`, roleReq: `749398291849936947` }),
+		CurrencyShop.upsert({ emoji: `🛍️`, name: `\`Buyer Badge\``, alias: `buyer badge`, cost: 1500, role: `806185184563167239`, roleReq: `749398291849936947` }),
+		CurrencyShop.upsert({ emoji: `📦`, name: `\`Seller Badge\``, alias: `seller badge`, cost: 1500, role: `806185323309826058`, roleReq: `749398291849936947` }),
 		CurrencyShop.upsert({ emoji: `🧊`, name: `\`Fridge\``, alias: `fridge`, cost: 2500, role: `737452571546877982`, roleReq: `749398291849936947` }),
 		CurrencyShop.upsert({ emoji: `♙`, name: `<@&749398291849936947>`, alias: `pawn`, cost: 2500, role: `749398291849936947`, roleReq: `737452571546877982` }),
 		CurrencyShop.upsert({ emoji: `♖`, name: `<@&737452903911915560>`, alias: `rook`, cost: 10000, role: `737452903911915560`, roleReq: `749398291849936947` }),

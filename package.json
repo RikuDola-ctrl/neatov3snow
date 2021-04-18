@@ -5,15 +5,28 @@
   "main": "app.js",
   "dependencies": {
     "canvas": "^2.6.1",
+    "discord": "^0.8.2",
     "discord.js": "github:discordjs/discord.js",
+    "fs": "^0.0.1-security",
     "json": "^10.0.0",
     "sequelize": "^6.5.0",
-    "sqlite3": "^5.0.1"
+    "sqlite": "^4.0.19",
+    "sqlite3": "^5.0.2"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "reload": "node dbInit.js",
+    "force": "node dbInit.js -f"
   },
   "author": "me",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RikuDola-ctrl/neatov3snow.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/RikuDola-ctrl/neatov3snow/issues"
+  },
+  "homepage": "https://github.com/RikuDola-ctrl/neatov3snow#readme"
 }
