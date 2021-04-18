@@ -398,6 +398,3 @@ client.on('message', async message => {
 });
 
 client.login(pasta.token);
-
-
-// 8====D
